@@ -28,6 +28,13 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             text-align: center;
             width: 340px;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            z-index: 10;
+        }
+        #login.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
         }
         #login input {
             width: 100%;
@@ -77,6 +84,51 @@
             display: none;
             letter-spacing: 0.5px;
         }
+
+        /* Fall Productions splash screen */
+        #splash {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0a0f;
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        #splash.show {
+            opacity: 1;
+        }
+        #splash.fade-out {
+            opacity: 0;
+        }
+        #splash .text {
+            font-size: 48px;
+            font-weight: 300;
+            letter-spacing: 12px;
+            color: #e0e0e0;
+            text-transform: lowercase;
+        }
+        #splash .text span {
+            color: #6c6cff;
+            font-weight: 400;
+        }
+        @media (max-width: 480px) {
+            #splash .text {
+                font-size: 28px;
+                letter-spacing: 8px;
+            }
+            #login {
+                width: 90%;
+                padding: 40px 24px;
+            }
+        }
+
         #iframe-container {
             display: none;
             width: 100vw;
@@ -85,6 +137,12 @@
             top: 0;
             left: 0;
             background: #0a0a0f;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 5;
+        }
+        #iframe-container.fade-in {
+            opacity: 1;
         }
         #iframe-container iframe {
             width: 100%;
@@ -106,19 +164,17 @@
             font-size: 12px;
             letter-spacing: 1.5px;
             text-transform: lowercase;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s, color 0.3s, opacity 0.8s ease;
             display: none;
             backdrop-filter: blur(10px);
+            opacity: 0;
+        }
+        .logout-btn.show {
+            opacity: 1;
         }
         .logout-btn:hover {
             background: #2a2a3e;
             color: #e0e0e0;
-        }
-        @media (max-width: 480px) {
-            #login {
-                width: 90%;
-                padding: 40px 24px;
-            }
         }
     </style>
 </head>
@@ -129,6 +185,11 @@
         <input type="password" id="passwordInput" placeholder="password" autofocus>
         <button onclick="checkPassword()">unlock</button>
         <div id="error">access denied</div>
+    </div>
+
+    <!-- splash screen -->
+    <div id="splash">
+        <div class="text">fall <span>productions</span></div>
     </div>
 
     <!-- mirror content -->
@@ -146,10 +207,42 @@
             const password = input.value.trim();
 
             if (password === correctPassword) {
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('iframe-container').style.display = 'block';
-                document.querySelector('.logout-btn').style.display = 'block';
+                // Fade out login
+                document.getElementById('login').classList.add('fade-out');
                 error.style.display = 'none';
+
+                // Show splash screen with fade in
+                const splash = document.getElementById('splash');
+                splash.style.display = 'flex';
+                
+                // Trigger fade in after a tiny delay
+                setTimeout(() => {
+                    splash.classList.add('show');
+                }, 50);
+
+                // After 1.5 seconds, fade out splash and show mirror
+                setTimeout(() => {
+                    splash.classList.add('fade-out');
+                    
+                    // Show mirror after splash fades out
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        splash.classList.remove('show', 'fade-out');
+                        
+                        const container = document.getElementById('iframe-container');
+                        container.style.display = 'block';
+                        setTimeout(() => {
+                            container.classList.add('fade-in');
+                        }, 50);
+
+                        const logoutBtn = document.querySelector('.logout-btn');
+                        logoutBtn.style.display = 'block';
+                        setTimeout(() => {
+                            logoutBtn.classList.add('show');
+                        }, 300);
+                    }, 1000);
+                }, 1500);
+
             } else {
                 error.style.display = 'block';
                 input.value = '';
@@ -160,11 +253,19 @@
         }
 
         function logout() {
-            document.getElementById('login').style.display = 'flex';
-            document.getElementById('iframe-container').style.display = 'none';
-            document.querySelector('.logout-btn').style.display = 'none';
-            document.getElementById('passwordInput').value = '';
-            document.getElementById('passwordInput').focus();
+            const container = document.getElementById('iframe-container');
+            container.classList.remove('fade-in');
+
+            const logoutBtn = document.querySelector('.logout-btn');
+            logoutBtn.classList.remove('show');
+
+            setTimeout(() => {
+                container.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                document.getElementById('login').classList.remove('fade-out');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }, 500);
         }
 
         document.getElementById('passwordInput').addEventListener('keypress', function(e) {
