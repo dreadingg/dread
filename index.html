@@ -1,8 +1,142 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clever Learning Mirror</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #login {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            text-align: center;
+            width: 300px;
+        }
+        #login h2 {
+            margin-top: 0;
+            color: #1a1a2e;
+        }
+        #login input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #login button {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #login button:hover {
+            background: #16213e;
+        }
+        #error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        #iframe-container {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        #iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+        .logout-btn:hover {
+            background: rgba(0,0,0,0.9);
+        }
+    </style>
+</head>
 <body>
-  <iframe src="https://s3.amazonaws.com/cleverlearning/index.html" 
-          style="width:100%;height:100vh;border:none;">
-  </iframe>
+
+    <!-- Login Screen -->
+    <div id="login">
+        <h2>🔐 Enter Password</h2>
+        <input type="password" id="passwordInput" placeholder="Enter password" autofocus>
+        <button onclick="checkPassword()">Unlock</button>
+        <div id="error">❌ Incorrect password. Try again.</div>
+    </div>
+
+    <!-- Mirror Content -->
+    <div id="iframe-container">
+        <iframe src="https://s3.amazonaws.com/cleverlearning/index.html"></iframe>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = "fall";
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('error');
+            const password = input.value.trim();
+
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('iframe-container').style.display = 'block';
+                document.querySelector('.logout-btn').style.display = 'block';
+                error.style.display = 'none';
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function logout() {
+            document.getElementById('login').style.display = 'flex';
+            document.getElementById('iframe-container').style.display = 'none';
+            document.querySelector('.logout-btn').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        }
+
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+
 </body>
 </html>
