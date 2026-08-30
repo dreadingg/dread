@@ -3,57 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clever Learning Mirror</title>
+    <title>mirror</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
         #login {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            background: #12121a;
+            padding: 50px 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a3a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             text-align: center;
-            width: 300px;
-        }
-        #login h2 {
-            margin-top: 0;
-            color: #1a1a2e;
+            width: 340px;
         }
         #login input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
+            padding: 14px 16px;
+            background: #1a1a26;
+            border: 1px solid #2a2a3e;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s;
+            margin-bottom: 12px;
+        }
+        #login input:focus {
+            border-color: #6c6cff;
+            box-shadow: 0 0 20px rgba(108,108,255,0.08);
+        }
+        #login input::placeholder {
+            color: #555566;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
         #login button {
             width: 100%;
-            padding: 12px;
-            background: #1a1a2e;
+            padding: 14px;
+            background: #6c6cff;
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 2px;
             cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            text-transform: lowercase;
         }
         #login button:hover {
-            background: #16213e;
+            background: #7a7aff;
+        }
+        #login button:active {
+            transform: scale(0.97);
         }
         #error {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 10px;
+            color: #ff6b6b;
+            font-size: 13px;
+            margin-top: 14px;
             display: none;
+            letter-spacing: 0.5px;
         }
         #iframe-container {
             display: none;
@@ -62,56 +84,68 @@
             position: fixed;
             top: 0;
             left: 0;
+            background: #0a0a0f;
         }
         #iframe-container iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: white;
         }
         .logout-btn {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 28px;
             z-index: 9999;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            padding: 10px 20px;
+            background: rgba(26,26,38,0.9);
+            color: #8888aa;
+            border: 1px solid #2a2a3e;
+            padding: 8px 18px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: lowercase;
+            transition: background 0.3s, color 0.3s;
             display: none;
+            backdrop-filter: blur(10px);
         }
         .logout-btn:hover {
-            background: rgba(0,0,0,0.9);
+            background: #2a2a3e;
+            color: #e0e0e0;
+        }
+        @media (max-width: 480px) {
+            #login {
+                width: 90%;
+                padding: 40px 24px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Login Screen -->
+    <!-- login screen -->
     <div id="login">
-        <h2>🔐 Enter Password</h2>
-        <input type="password" id="passwordInput" placeholder="Enter password" autofocus>
-        <button onclick="checkPassword()">Unlock</button>
-        <div id="error">❌ Incorrect password. Try again.</div>
+        <input type="password" id="passwordInput" placeholder="password" autofocus>
+        <button onclick="checkPassword()">unlock</button>
+        <div id="error">access denied</div>
     </div>
 
-    <!-- Mirror Content -->
+    <!-- mirror content -->
     <div id="iframe-container">
         <iframe src="https://s3.amazonaws.com/cleverlearning/index.html"></iframe>
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <button class="logout-btn" onclick="logout()">exit</button>
     </div>
 
     <script>
-        const CORRECT_PASSWORD = "fall";
+        const correctPassword = "fall";
 
         function checkPassword() {
             const input = document.getElementById('passwordInput');
             const error = document.getElementById('error');
             const password = input.value.trim();
 
-            if (password === CORRECT_PASSWORD) {
+            if (password === correctPassword) {
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('iframe-container').style.display = 'block';
                 document.querySelector('.logout-btn').style.display = 'block';
@@ -120,6 +154,8 @@
                 error.style.display = 'block';
                 input.value = '';
                 input.focus();
+                input.style.borderColor = '#ff6b6b';
+                setTimeout(() => { input.style.borderColor = '#2a2a3e'; }, 800);
             }
         }
 
